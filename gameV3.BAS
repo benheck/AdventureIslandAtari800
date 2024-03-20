@@ -1,12 +1,13 @@
 10 REM ADVENTURE ISLAND REBIRTH: RISE OF DAWN, BY OLDER BEN HECK
 20 DIM LOC$(80),RE$(80),P$(100),O$(100),WORD$(10),DA(255),LASTNOUN$(3)
 30 DIM NOUN$(3),VERB$(3),I$(50),PREFACE$(20)
-40 MATCHLOC=99:LEVERLOC=36:DYNAMITELOC=27:KNIFELOC=99:VINELOC=5
+40 MATCHLOC=99:LEVERLOC=36:DYNAMITELOC=27:KNIFELOC=99:VINELOC=99:GREASELOC=99:OARSLOC=31
 50 WCOUNT=0:CUR=0:T=0
 60 CLEARLIST=5500:APPENDLIST=5600:SHOWEXITS=5000:SHOWOBJECTS=5100:SHOWINVENTORY=5200
 70 ROOM=1
-80 TREESTATE=0:BOULDERSTATE=0:ROCKSTATE=0:CANVASSTATE=0:LEVERSTATE=0:MATCHES=4
-90 WETBOMB=1:FUSE=0:KILN=0:BOARDS=0:CRUMBLE=0:CHUTE=0:VINEHOOK=0
+80 TREESTATE=0:BOULDERSTATE=0:CANVASSTATE=0:LEVERSTATE=0:MATCHES=4:OARSSTATE=0
+90 WETBOMB=1:FUSE=0:KILN=0:BOARDS=0:CHUTE=0:VINESTATE=0:VINEHOOK=0:WHALESTATE=0
+95 CARTSTATE=0
 99 GR.0:GOTO 1000
 100 LOC$="You find yourself shipwrecked on the shores of a desolate island"
 101 RE$="The sea is vast"
@@ -20,9 +21,10 @@
 130 LOC$="You are at the edge of a jungle"
 131 IF TREESTATE=0 THEN RE$="A fallen, dried-up tree blocks the east path":WE=3:NO=6:RETURN
 132 IF TREESTATE=1 THEN RE$="A path leads east.":EA=5:NO=6:WE=3:RETURN
-140 LOC$="You are inside the jungle"
-141 RE$="The smell of the burnt tree still lingers in the air"
-142 WE=4:NO=7:RETURN
+140 LOC$="You are inside the steamy jungle"
+141 IF VINESTATE=0 THEN RE$="Vines hang from the canopy":GOTO 149
+142 RE$=""
+149 WE=4:NO=7:RETURN
 150 LOC$="You are in an old lean-to":SO=4:LASTNOUN$="BOA"
 151 IF BOARDS=0 THEN RE$="The boards are loose":RETURN
 152 RE$="The boards lay in splinters on the foor":RETURN
@@ -69,10 +71,11 @@
 282 EA=20:WE=8:RETURN
 290 LOC$="You are on a path leading to the ocean"
 291 RE$="Next to the east side of the wall"
-291 WE=19:SO=21:RETURN
+299 WE=19:SO=21:RETURN
 300 LOC$="You are on the eastern shore"
-301 RE$="The sand is dull here"
-302 EA=22:NO=20:RETURN
+301 IF WHALESTATE=0 THEN RE$="A bloated whale corpse lays in the sun":GOTO 309
+302 RE$="Someone has harvested the whale for grease. How barbaric"
+309 EA=22:NO=20:RETURN
 310 LOC$="You are at the bottom of a hill"
 311 RE$="You see a building at the top of it"
 312 WE=21:NO=23:RETURN
@@ -93,34 +96,35 @@
 370 LOC$="You are in a small recess in the ground"
 371 RE$="A plug is on the ceiling"
 372 NO=27:RETURN
-380 LOC$="You are in a tunnel inside the volcano"
-381 RE$="It appears man-made, with different paths"
-382 WE=32:EA=11:SO=30:RETURN
-390 LOC$="You are at a dead-end in the south tunnel. A large hole is above you"
-391 IF ROCKSTATE=0 THEN RE$="A large, thin, rock is here":NO=29:RETURN
-392 RE$="A hole leads down, with a large thing rock beside it":NO=29:DO=31:RETURN
-400 LOC$="You are in a damp hole"
-401 RE$=" "
-402 UP=30:RETURN
-410 LOC$="You are in a sharp turn of the corridor"
-411 RE$=" "
-412 EA=29:UP=33:RETURN
+380 LOC$="You are in a mining tunnel inside the volcano"
+381 RE$="Looks like it hasn't been used in a century"
+382 WE=32:EA=11:RETURN
+390 LOC$="You are at a dead-end in the south tunnel. A large hole is above you":NO=32
+391 IF CARTSTATE<2 THEN RE$="An old mining cart is here":RETURN
+392 RE$="With the cart gone, a hole under the track is revealed":DO=31:RETURN
+400 LOC$="You are in a dark, damp hole":UP=30
+405 RE$="You are likely to be eaten by a grue":RETURN
+410 LOC$="You are in a sharp turn of the corridor. Mine cart tracks lead south"
+411 IF CARTSTATE=2 THEN RE$="The mining cart is here, you could stand on it to proceed up":UP=33
+412 IF CARTSTATE<>2 THEN RE$="A path leads up, but it is beyond your reach"
+419 EA=29:SO=30:RETURN
 420 LOC$="You are on a musty platform"
 421 IF CANVASSTATE=0 THEN GOTO 425
 422 RE$="The canvas is ripped open enough for you to crawl past":UP=34:DO=32:RETURN
 425 RE$="A piece of thick, oily canvas blocks the upper exit":DO=32:RETURN
 430 LOC$="You are in the huge hollow in the volcano"
-431 IF CRUMBLE=1 THEN RE$="The western path has crumbled away":GOTO 439
 432 RE$="A crumbling path leads precariously west":WE=35
 439 DO=33:RETURN
-440 LOC$="You are on a cliff outside the volcano":SO=36
-441 IF CRUMBLE=0 THEN RE$="The path crumbles behind you! You can't go back!":GOTO 449
-445 RE$="The path east has crumbed away":RETURN
-449 CRUMBLE=1:RETURN
-450 LOC$="You are in a hollowed-out room"
+440 LOC$="You are on a cliff outside the volcano":SO=36:EA=34
+445 RE$="It's a LONG WAY DOWN!":RETURN
+450 LOC$="You are in a hollowed-out room off the edge of the cliff"
 451 RE$="A cord dangles from the ceiling"
 455 NO=35:RETURN
-460 ? "You come out into the sunlight and...":GOTO 8500
+460 LOC$="You're on the north shore of the island":SO=14
+461 IF OARSSTATE=0 THEN RE$="There's a small boat here, but it has no oars"
+462 IF OARSSTATE=1 THEN RE$="The boat has oars, allowing an escape north":NO=38
+469 RETURN
+470 ? "You row the boat out to sea and...":GOTO 8500
 1000 POKE 82,0:SETCOLOR 2,12,7:SETCOLOR 4,12,7:SETCOLOR 1,0,0
 1020 WE=0:EA=0:SO=0:NO=0:UP=0:DO=0
 1030 U=(ROOM*10)+90:GOSUB U
@@ -174,15 +178,23 @@
 2000 REM TAKE---------------
 2010 IF NOUN$="MAT" AND MATCHLOC=ROOM THEN MATCHLOC=0:GOTO 2099
 2015 IF NOUN$="VIN" AND VINELOC=ROOM THEN VINELOC=0:GOTO 2099
+2016 IF NOUN$="VIN" THEN GOTO 2050
 2020 IF NOUN$="LEV" AND LEVERLOC=ROOM THEN LEVERLOC=0:GOTO 2099
+2025 IF NOUN$="GRE" AND GREASELOC=ROOM THEN GREASELOC=0:GOTO 2099
 2030 IF NOUN$="DYN" AND DYNAMITELOC=ROOM THEN DYNAMITELOC=0:GOTO 2099
+2035 IF NOUN$="OAR" AND OARSLOC=ROOM THEN OARSLOC=0:GOTO 2099
 2040 IF NOUN$="KNI" AND KNIFELOC=ROOM THEN KNIFELOC=0:GOTO 2099
-2098 ? "Can't take that":GOTO 1100
+2049 ? "Can't take that":GOTO 1100
+2050 IF ROOM<>5 THEN GOTO 2049
+2051 IF VINESTATE=0 THEN ? "They're firmly attached. You need to cut them loose":GOTO 1100
+2052 ? "You've already contributed to the defoliation of this rainforest":GOTO 1100
 2099 ? "Taken":GOTO 1100
 2100 REM DROP---------------
 2110 IF NOUN$="MAT" AND MATCHLOC=0 THEN MATCHLOC=ROOM:GOTO 2199
 2120 IF NOUN$="LEV" AND LEVERLOC=0 THEN LEVERLOC=ROOM:GOTO 2199
+2125 IF NOUN$="OAR" AND OARSLOC=0 THEN OARSLOC=ROOM:GOTO 2199
 2130 IF NOUN$="DYN" AND DYNAMITELOC=0 THEN DYNAMITELOC=ROOM:GOTO 2199
+2135 IF NOUN$="GRE" AND GREASELOC=0 THEN GREASELOC=ROOM:GOTO 2199
 2140 IF NOUN$="KNI" AND KNIFELOC=0 THEN KNIFELOC=ROOM:GOTO 2199
 2145 IF NOUN$="VIN" AND VINELOC=0 THEN VINELOC=ROOM:GOTO 2199
 2198 ? "Can't drop that":GOTO 1100
@@ -203,13 +215,17 @@
 2235 IF WETBOMB=1 THEN ? "The dynamite is damp. It won't function in this state":GOTO 1100
 2236 ? "The dynamite has been dried out and is now likely dangerous":GOTO 1100
 2240 IF NOUN$="KNI" AND (KNIFELOC=0 OR KNIFELOC=ROOM) THEN ? "It's still sharp":GOTO 1100
-2245 IF NOUN$="VIN" AND (VINELOC=0 OR VINELOC=ROOM) THEN ? "They look quite strong and rope-like":GOTO 1100
+2245 IF NOUN$="OAR" AND (OARSLOC=0 OR OARSLOC=ROOM) THEN ? "Put these on a boat!":GOTO 1100
+2245 IF NOUN$="VIN" AND (VINELOC=0 OR VINELOC=ROOM) THEN ? "Quite strong and rope-like":GOTO 1100
+2246 IF NOUN$="VIN" AND ROOM=5 AND VINESTATE=0 THEN ? "Looks useful, if you could cut them down":GOTO 1100
 2250 IF NOUN$="CAN" AND ROOM=33 THEN ? "It's quite thick and oily":GOTO 1100
+2255 IF NOUN$="GRE" AND (GREASELOC=0 OR GREASELOC=ROOM) THEN ? "Would make a good lubricant":GOTO 1100
 2260 IF NOUN$="ROC" AND ROOM=30 THEN ? "It's covering something":GOTO 1100
 2270 IF NOUN$="BOU" AND ROOM=11 THEN ? "Could be destroyed with dynamite":GOTO 1100
 2280 IF NOUN$="HAN" AND ROOM=17 THEN ? "Looks like it wants something":GOTO 1100
 2290 IF NOUN$="COR" AND ROOM=36 THEN ? "Part of some contraption":GOTO 1100
 2300 IF NOUN$="PLU" AND ROOM=28 THEN ? "Water seeps from behind it":GOTO 1100
+2305 IF NOUN$="WHA" AND ROOM=21 THEN ? "Probably contains useful resources":GOTO 1100
 2310 IF NOUN$="WAL" AND ROOM=7 THEN ? "It's made of stone":GOTO 1100
 2320 IF NOUN$="HUT" AND (ROOM=23 OR ROOM=24) THEN ? "Looks pretty old":GOTO 1100
 2330 IF NOUN$="DEC" AND ROOM=1 THEN ? "Nothing special":GOTO 1100
@@ -222,33 +238,48 @@
 2355 IF KILN=0 THEN ? "The firewood is dry as a bone. It would burn easily":GOTO 1100
 2356 ? "The firewood is burning":GOTO 1100
 2360 IF NOUN$="HUM" AND ROOM=17 THEN GOTO 2400
+2370 IF NOUN$="CAR" AND ROOM=30 AND CARTSTATE=0 THEN ? "The wheels are seized with rust":GOTO 1100
 2399 ? "You can't examine that":GOTO 1100
 2400 IF KNIFELOC<>99 THEN ? "There's a dry, gaping hole in their chest":GOTO 1100
 2405 ? "A knife is plunged into their chest":LASTNOUN$="KNI":KNIFELOC=ROOM:GOTO 1100
 2600 REM PUSH---------------
 2610 IF NOUN$="ROC" AND ROOM=30 THEN GOTO 2690
 2615 IF NOUN$="BOA" AND ROOM=6 AND BOARDS=0 THEN GOTO 2695
-2689 ? "You can't push that":GOTO 1100
-2690 ? "You push the rock aside, revealing a hole leading down":ROCKSTATE=1:DO=31:GOTO 1100
+2620 IF NOUN$="CAR" THEN GOTO 2680
+2649 ? "You can't push that":GOTO 1100
+2680 IF ROOM=30 AND CARTSTATE=0 THEN ? "The wheels are seized with rust. They need lubricant":GOTO 1100
+2681 IF ROOM=30 AND CARTSTATE=1 THEN GOTO 2690
+2682 IF ROOM=32 AND CARTSTATE=2 THEN ? "You can't push it any further. But you could pull it back":GOTO 1100
+2689 ? "There's no cart here":GOTO 1100
+2690 ? "The cart rolls into the room north of you. A hole under the cart is revealed, leading down"
+2691 DO=31:CARTSTATE=2:GOTO 1100
 2695 ? "The boards fall apart, revealing a book of matches"
 2696 LASTNOUN$="MAT":BOARDS=1:MATCHLOC=ROOM:GOTO 1100
 2700 REM PULL---------------
 2710 IF NOUN$="PLU" AND ROOM=28 THEN I$="The ocean pours in on you...":GOTO 8000
-2715 IF NOUN$="ROC" THEN GOTO 2770
+2715 IF NOUN$="CAR" THEN GOTO 2780
 2720 IF NOUN$="BOA" AND ROOM=6 THEN GOTO 2600
 2725 IF NOUN$="COR" AND ROOM=36 THEN GOTO 2730
 2729 ? "You can't pull that":GOTO 1100
 2730 ? "A trapdoor opens, you fall into a chute!":CHUTE=1:ROOM=30:GOTO 1000
-2770 IF ROOM=30 AND ROCKSTATE=1 THEN ? "The rock is back over the hole":ROCKSTATE=0:DO=0:GOTO 1100
-2771 IF ROOM=30 AND ROCKSTATE=0 THEN ? "Can't pull in that direction":GOTO 1100
-2779 GOTO 2769
+2780 IF ROOM=32 AND CARTSTATE=2 THEN ? "The cart rolls back south":CARTSTATE=1:GOTO 1100
+2781 IF ROOM=30 AND CARTSTATE=1 THEN ? "Can't pull it any further, but you could push":GOTO 1100
+2789 GOTO 2729
 2800 REM CUT----------------
-2810 IF NOUN$="CAN" AND ROOM=33 AND CANVASSTATE=0 AND KNIFELOC=0 THEN GOTO 2820
+2801 IF KNIFELOC<>0 THEN ? "You have nothing to cut with. Find a knife":GOTO 1100
+2810 IF NOUN$="CAN" AND ROOM=33 AND CANVASSTATE=0 THEN GOTO 2820
+2812 IF NOUN$="WHA" AND ROOM=21 THEN GOTO 2840
+2815 IF NOUN$="VIN" AND ROOM=5 THEN GOTO 2830
 2819 ? "You can't cut that":GOTO 1100
 2820 ? "You slice open the canvas, making a pathway up":CANVASSTATE=1:UP=34:GOTO 1100
+2830 IF VINESTATE=0 THEN VINESTATE=1:VINELOC=ROOM:? "The vines fall to the ground":GOTO 1100
+2839 GOTO 2052
+2840 IF WHALESTATE=0 THEN GREASELOC=ROOM:WHALESTATE=1:GOTO 2849
+2841 ? "Better not risk it again, the Red Hot Chili Peppers might see you":GOTO 1100
+2849 ? "You slice open the whale, revealing grease.":LASTNOUN$="GRE":GOTO 1100
 3000 REM BURN---------------
 3005 IF MATCHLOC<>0 THEN ? "You have no source of fire":GOTO 1100
-3006 IF MATCHES=0 THEN ? "No matches left.":GOTO 1100
+3006 IF MATCHES=0 THEN ? "No matches left. You are probably going to die now":GOTO 1100
 3009 IF NOUN$="DYN" THEN ? "To use dynamite: PUT DYNAMITE, consumes 1 match":GOTO 1100
 3010 IF NOUN$="FIR" AND ROOM=24 AND KILN=0 THEN GOTO 3050
 3020 IF NOUN$="CAN" AND ROOM=33 THEN GOTO 3060
@@ -262,6 +293,8 @@
 3110 IF NOUN$="DYN" THEN GOTO 3200
 3120 IF NOUN$="LEV" AND ROOM=13 AND LEVERSTATE=0 THEN GOTO 3300
 3130 IF NOUN$="VIN" THEN GOTO 3400
+3140 IF NOUN$="GRE" THEN GOTO 3500
+3150 IF NOUN$="OAR" THEN GOTO 3600
 3199 ? "Can't put that there":GOTO 1100
 3200 IF DYNAMITELOC<>0 THEN ? "You don't have any dynamite":GOTO 1100 
 3210 ? "Put dynamite where";:INPUT P$
@@ -289,6 +322,21 @@
 3420 ? "That would be a waste of perfectly good vines":GOTO 1100
 3490 ? "The vines connect to the hook, allowing a passage up"
 3495 VINEHOOK=1:VINELOC=99:UP=10:GOTO 1100
+3500 IF GREASELOC<>0 THEN ? "You don't have any grease, and what's in your hair doesn't count":GOTO 1100
+3510 ? "Put grease where";:INPUT P$
+3515 IF ROOM=30 AND CARTSTATE=0 AND P$(1,3)="CAR" THEN GOTO 3520
+3516 IF ROOM=30 AND CARTSTATE=0 AND P$(1,3)="WHE" THEN GOTO 3520
+3519 ? "Don't waste your precious, illegal whale grease on that!":GOTO 1100
+3520 ? "You grease up the cart's wheels, you should be able to push or pull it now"
+3521 GREASELOC=99:CARTSTATE=1:GOTO 1100
+3600 IF OARLOC<>0 THEN ? "You don't have any oars":GOTO 1100
+3610 ? "Put oars where";:INPUT P$
+3615 IF P$(1,3)<>"BOA" THEN GOTO 3649
+3620 IF ROOM<>37 THEN GOTO 3649
+3630 IF OARSSTATE=0 THEN GOTO 3650
+3635 ? "They're already installed. Go north, young man"
+3649 ? "Why put oars there?":GOTO 1100
+3650 OARSLOC=99:OARSSTATE=1:NO=38:? "You install the oars on the boat, you can now row north":GOTO 1100
 5000 REM SHOW EXITS SUBROUTINES
 5001 GOSUB CLEARLIST
 5010 ? "Exits lead: ";
@@ -306,7 +354,9 @@
 5120 IF LEVERLOC=T THEN WORD$="lever":GOSUB APPENDLIST
 5130 IF DYNAMITELOC=T THEN WORD$="dynamite":GOSUB APPENDLIST
 5140 IF KNIFELOC=T THEN WORD$="knife":GOSUB APPENDLIST
+5145 IF OARSLOC=T THEN WORD$="oars":GOSUB APPENDLIST
 5150 IF VINELOC=T THEN WORD$="vines":GOSUB APPENDLIST
+5155 IF GREASELOC=T THEN WORD$="grease":GOSUB APPENDLIST
 5190 IF WCOUNT>0 THEN ? PREFACE$;:? O$
 5199 RETURN 
 5200 REM SHOW INVENTORY set T as 0 (inventory) and call showobjects
@@ -336,9 +386,9 @@
 8040 GOTO 10:REM START OVER!
 8500 REM A WINNER IS YOU--------------
 8510 SETCOLOR 1,0,0:SETCOLOR 2,7,8:SETCOLOR 4,15,14
-8520 FOR U=1 TO 18:? " ":NEXT U
-8530 ? "   YOU HAVE FOUND A BOAT."
-8540 ? "  YOU USE IT TO GET HOME"
-8550 ? " BUT WHEN YOU DO, IT TURNS OUT YOUR WIFE MARRIED SOME OTHER GUY"
+8520 FOR U=1 TO 15:? " ":NEXT U
+8530 ? " You get picked up by the crew of Whale Wars"
+8540 ? " (You don't tell them where you got the grease)"
+8550 ? " They take your back home"
 8050 FOR G=1 TO 1000:NEXT G:END
 9999 END
