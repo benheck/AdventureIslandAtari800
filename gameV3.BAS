@@ -1,44 +1,47 @@
-10 REM ADVENTURE ISLAND REBIRTH: RISE OF DAWN, BY OLDER BEN HECK
+10 REM ADVENTURE ISLAND REBIRTH: RISE OF DAWN, BY OLDER BEN HECK 2024
 20 DIM LOC$(80),RE$(80),P$(100),O$(100),WORD$(10),DA(255),LASTNOUN$(3)
 30 DIM NOUN$(3),VERB$(3),I$(50),PREFACE$(20)
 40 MATCHLOC=99:LEVERLOC=36:DYNAMITELOC=27:KNIFELOC=99:VINELOC=99:GREASELOC=99:OARSLOC=31
 50 WCOUNT=0:CUR=0:T=0
 60 CLEARLIST=5500:APPENDLIST=5600:SHOWEXITS=5000:SHOWOBJECTS=5100:SHOWINVENTORY=5200
-70 ROOM=1
+70 ROOM=1:DIRLST=0
 80 TREESTATE=0:BOULDERSTATE=0:CANVASSTATE=0:LEVERSTATE=0:MATCHES=4:OARSSTATE=0
 90 WETBOMB=1:FUSE=0:KILN=0:BOARDS=0:CHUTE=0:VINESTATE=0:VINEHOOK=0:WHALESTATE=0
-95 CARTSTATE=0
-99 GR.0:GOTO 1000
+91 CARTSTATE=0
+92 GR.0
+93 ? "ADVENTURE ISLAND 2024"
+94 ? "Type HELP for verb list":?:?
+99 GOTO 1000
 100 LOC$="You find yourself shipwrecked on the shores of a desolate island"
-101 RE$="The sea is vast"
+101 RE$="The sea is vast":LASTNOUN$="SEA"
 102 NO=2:RETURN
 110 LOC$="You are further up shore"
-111 RE$="The sand glitters in the sunlight"
+111 RE$="The sand glitters in the sunlight":LASTNOUN$="SAN"
 112 SO=1:NO=3:RETURN
 120 LOC$="You are on a path"
 121 RE$="To the east you hear the animalistic sounds of a jungle"
 123 EA=4:SO=2:RETURN
-130 LOC$="You are at the edge of a jungle"
+130 LOC$="You are at the edge of a jungle":LASTNOUN$="TRE"
 131 IF TREESTATE=0 THEN RE$="A fallen, dried-up tree blocks the east path":WE=3:NO=6:RETURN
 132 IF TREESTATE=1 THEN RE$="A path leads east.":EA=5:NO=6:WE=3:RETURN
-140 LOC$="You are inside the steamy jungle"
+140 LOC$="You are inside the steamy jungle":LASTNOUN$="VIN"
 141 IF VINESTATE=0 THEN RE$="Vines hang from the canopy":GOTO 149
-142 RE$=""
+142 RE$="Some of the vines have been cut down"
 149 WE=4:NO=7:RETURN
 150 LOC$="You are in an old lean-to":SO=4:LASTNOUN$="BOA"
 151 IF BOARDS=0 THEN RE$="The boards are loose":RETURN
 152 RE$="The boards lay in splinters on the foor":RETURN
 160 LOC$="You are at a wall":RE$="It appears man-made"
 161 SO=5:DO=26:RETURN
-170 LOC$="You are at the north side of the wall":RE$=" "
+170 LOC$="You are at the north side of the wall":RE$="You hear sounds of the ocean to the east"
 171 EA=19:NO=9:RETURN
 180 LOC$="You are in a swamp"
-181 RE$=" "
+181 RE$="The smell is eternal"
 182 NO=10:SO=8:RETURN
 190 LOC$="You are on a path"
 191 RE$="Vines lead down into a hole"
 192 WE=11:SO=9:DO=15:RETURN
-200 LOC$="You are at the base of an inactive volcano"
+200 LOC$="You are at the base of an inactive volcano":LASTNOUN$="BOU"
 201 IF BOULDERSTATE=0 THEN GOTO 205
 202 RE$="A tunnel leads west into it"
 203 WE=29:EA=10:NO=12:RETURN
@@ -46,7 +49,7 @@
 210 LOC$="You are at the north side of the volcano"
 211 RE$="A passage leads down"
 212 DO=13:SO=11:RETURN
-220 LOC$="You are in a chamber filled with strange machinery"
+220 LOC$="You are in a chamber filled with strange machinery":LASTNOUN$="PAN"
 221 IF LEVERSTATE=0 THEN GOTO 225
 222 RE$="The open panel reveals a passage to the east":EA=14:UP=12:RETURN
 225 RE$="There is a closed panel here, with a rusty hole next to it":UP=12:RETURN
@@ -70,9 +73,9 @@
 281 RE$=" "
 282 EA=20:WE=8:RETURN
 290 LOC$="You are on a path leading to the ocean"
-291 RE$="Next to the east side of the wall"
+291 RE$="The wall finally ends here"
 299 WE=19:SO=21:RETURN
-300 LOC$="You are on the eastern shore"
+300 LOC$="You are on the eastern shore":LASTNOUN$="WHA"
 301 IF WHALESTATE=0 THEN RE$="A bloated whale corpse lays in the sun":GOTO 309
 302 RE$="Someone has harvested the whale for grease. How barbaric"
 309 EA=22:NO=20:RETURN
@@ -99,8 +102,8 @@
 380 LOC$="You are in a mining tunnel inside the volcano"
 381 RE$="Looks like it hasn't been used in a century"
 382 WE=32:EA=11:RETURN
-390 LOC$="You are at a dead-end in the south tunnel. A large hole is above you":NO=32
-391 IF CARTSTATE<2 THEN RE$="An old mining cart is here":RETURN
+390 LOC$="You are at a dead-end in the south tunnel. A strange hole is above you":NO=32
+391 IF CARTSTATE<2 THEN RE$="An old mining cart is here":LASTNOUN$="CAR":RETURN
 392 RE$="With the cart gone, a hole under the track is revealed":DO=31:RETURN
 400 LOC$="You are in a dark, damp hole":UP=30
 405 RE$="You are likely to be eaten by a grue":RETURN
@@ -108,15 +111,15 @@
 411 IF CARTSTATE=2 THEN RE$="The mining cart is here, you could stand on it to proceed up":UP=33
 412 IF CARTSTATE<>2 THEN RE$="A path leads up, but it is beyond your reach"
 419 EA=29:SO=30:RETURN
-420 LOC$="You are on a musty platform"
+420 LOC$="You are on a musty platform":LASTNOUN$="CAN"
 421 IF CANVASSTATE=0 THEN GOTO 425
 422 RE$="The canvas is ripped open enough for you to crawl past":UP=34:DO=32:RETURN
-425 RE$="A piece of thick, oily canvas blocks the upper exit":DO=32:RETURN
+425 RE$="A piece of thick canvas blocks the upper exit":DO=32:RETURN
 430 LOC$="You are in the huge hollow in the volcano"
 432 RE$="A crumbling path leads precariously west":WE=35
 439 DO=33:RETURN
 440 LOC$="You are on a cliff outside the volcano":SO=36:EA=34
-445 RE$="It's a LONG WAY DOWN!":RETURN
+445 RE$="It is a LONG WAY DOWN!":RETURN
 450 LOC$="You are in a hollowed-out room off the edge of the cliff"
 451 RE$="A cord dangles from the ceiling"
 455 NO=35:RETURN
@@ -208,27 +211,32 @@
 2218 IF MATCHES=1 THEN ? "Only 1 left":GOTO 1100
 2219 ? "The matchbook is empty":GOTO 1100
 2220 IF NOUN$="LEV" AND (LEVERLOC=0 OR LEVERLOC=ROOM) THEN ? "Looks like it was taken from a machine":GOTO 1100
-2221 IF NOUN$="TRE" AND ROOM=4 THEN ? "It's very old, musty and dry looking":GOTO 1100
+2221 IF NOUN$="TRE" AND ROOM=4 THEN ? "It is very old, musty and dry looking":GOTO 1100
 2222 IF NOUN$="SEA" AND ROOM=1 THEN ? "You've no chance of escape without a boat":GOTO 1100
 2230 IF NOUN$="DYN" AND (DYNAMITELOC=0 OR DYNAMITELOC=ROOM) THEN GOTO 2235
 2231 GOTO 2240
 2235 IF WETBOMB=1 THEN ? "The dynamite is damp. It won't function in this state":GOTO 1100
 2236 ? "The dynamite has been dried out and is now likely dangerous":GOTO 1100
-2240 IF NOUN$="KNI" AND (KNIFELOC=0 OR KNIFELOC=ROOM) THEN ? "It's still sharp":GOTO 1100
-2245 IF NOUN$="OAR" AND (OARSLOC=0 OR OARSLOC=ROOM) THEN ? "Put these on a boat!":GOTO 1100
-2245 IF NOUN$="VIN" AND (VINELOC=0 OR VINELOC=ROOM) THEN ? "Quite strong and rope-like":GOTO 1100
+2240 IF NOUN$="KNI" AND (KNIFELOC=0 OR KNIFELOC=ROOM) THEN ? "It is still sharp":GOTO 1100
+2242 IF NOUN$="OAR" AND (OARSLOC=0 OR OARSLOC=ROOM) THEN ? "Put these on a boat!":GOTO 1100
+2244 IF NOUN$="VIN" AND (VINELOC=0 OR VINELOC=ROOM) THEN ? "Quite strong and rope-like":GOTO 1100
 2246 IF NOUN$="VIN" AND ROOM=5 AND VINESTATE=0 THEN ? "Looks useful, if you could cut them down":GOTO 1100
-2250 IF NOUN$="CAN" AND ROOM=33 THEN ? "It's quite thick and oily":GOTO 1100
+2250 IF NOUN$="CAN" AND ROOM=33 THEN ? "It is quite thick":GOTO 1100
 2255 IF NOUN$="GRE" AND (GREASELOC=0 OR GREASELOC=ROOM) THEN ? "Would make a good lubricant":GOTO 1100
-2260 IF NOUN$="ROC" AND ROOM=30 THEN ? "It's covering something":GOTO 1100
+2260 IF NOUN$="ROC" AND ROOM=30 THEN ? "It is covering something":GOTO 1100
+2265 IF NOUN$="MAC" AND ROOM=13 THEN ? "It has been here a long time but looks functional":GOTO 1100
 2270 IF NOUN$="BOU" AND ROOM=11 THEN ? "Could be destroyed with dynamite":GOTO 1100
-2280 IF NOUN$="HAN" AND ROOM=17 THEN ? "Looks like it wants something":GOTO 1100
+2275 IF NOUN$="PAN" AND ROOM=13 THEN ? "If opened, you could fit through the hole":GOTO 1100
+2280 IF NOUN$="SAN" AND ROOM<4 THEN ? "It could become a 6502 someday":GOTO 1100
 2290 IF NOUN$="COR" AND ROOM=36 THEN ? "Part of some contraption":GOTO 1100
 2300 IF NOUN$="PLU" AND ROOM=28 THEN ? "Water seeps from behind it":GOTO 1100
 2305 IF NOUN$="WHA" AND ROOM=21 THEN ? "Probably contains useful resources":GOTO 1100
-2310 IF NOUN$="WAL" AND ROOM=7 THEN ? "It's made of stone":GOTO 1100
+2310 IF NOUN$="WAL" AND ROOM=7 THEN ? "It is very high. You can't climb over":GOTO 1100
+2315 IF NOUN$="HOL" AND ROOM=13 THEN ? "Looks like it has a missing piece":GOTO 1100
 2320 IF NOUN$="HUT" AND (ROOM=23 OR ROOM=24) THEN ? "Looks pretty old":GOTO 1100
-2330 IF NOUN$="DEC" AND ROOM=1 THEN ? "Nothing special":GOTO 1100
+2325 IF NOUN$="HOO" AND ROOM=15 THEN ? "With some rope, you could use it to go up":GOTO 1100
+2330 IF NOUN$="BOA" AND ROOM=6 THEN ? "You could probably pull them out":GOTO 1100
+2335 IF NOUN$="BOA" AND ROOM=37 THEN ? "It could be your salvation!":GOTO 1100
 2340 IF NOUN$="KIL" AND ROOM=24 THEN GOTO 2345
 2341 GOTO 2350
 2345 IF KILN=0 THEN ? "Looks functional.The firewood is already loaded":GOTO 1100
@@ -287,7 +295,7 @@
 3049 ? "You can't burn that":GOTO 1100
 3050 ? "The firewood is now burning, the kiln is heating up"
 3051 MATCHES=MATCHES-1:KILN=1:GOTO 1100
-3060 ? "The oily canvas erupts into flames! It falls over you, burning you to a crisp!":GOTO 8000
+3060 ? "The canvas erupts into flames! It falls over you, burning you to a crisp!":GOTO 8000
 3070 ? "The tree burns to ash, opening a path east":MATCHES=MATCHES-1:TREESTATE=1:EA=5:GOTO 1100
 3100 REM PUT----------------
 3110 IF NOUN$="DYN" THEN GOTO 3200
@@ -319,7 +327,9 @@
 3400 IF VINELOC<>0 THEN ? "You don't have any vines":GOTO 1100
 3410 ? "Put vines where";:INPUT P$
 3415 IF ROOM=15 AND P$(1,3)="HOO" THEN GOTO 3490
-3420 ? "That would be a waste of perfectly good vines":GOTO 1100
+3420 IF ROOM=7 AND P$(1,3)="WAL" THEN GOTO 3480
+3449 ? "That would be a waste of perfectly good vines":GOTO 1100
+3480 ? "You can't climb the wall, even with vines. Find another path":GOTO 1100
 3490 ? "The vines connect to the hook, allowing a passage up"
 3495 VINEHOOK=1:VINELOC=99:UP=10:GOTO 1100
 3500 IF GREASELOC<>0 THEN ? "You don't have any grease, and what's in your hair doesn't count":GOTO 1100
@@ -339,6 +349,7 @@
 3650 OARSLOC=99:OARSSTATE=1:NO=38:? "You install the oars on the boat, you can now row north":GOTO 1100
 5000 REM SHOW EXITS SUBROUTINES
 5001 GOSUB CLEARLIST
+5005 DIRLST=1
 5010 ? "Exits lead: ";
 5012 IF NO>0 THEN WORD$="north":GOSUB APPENDLIST
 5014 IF SO>0 THEN WORD$="south":GOSUB APPENDLIST
@@ -347,6 +358,7 @@
 5017 IF UP>0 THEN WORD$="up":GOSUB APPENDLIST
 5018 IF DO>0 THEN WORD$="down":GOSUB APPENDLIST
 5019 ? O$
+5020 DIRLST=0
 5099 RETURN 
 5100 REM SHOW OBJECTS SUBROUTINES
 5101 GOSUB CLEARLIST
@@ -372,7 +384,7 @@
 5610 WCOUNT=WCOUNT+1
 5620 O$(CUR)=WORD$:CUR=CUR+(LEN(WORD$))
 5621 IF LEN(WORD$)<3 THEN RETURN
-5622 LASTNOUN$=WORD$(1,3)
+5622 IF DIRLST=0 THEN LASTNOUN$=WORD$(1,3):REM DON'T LET DIRECTIONS BECOME LASTNOUN$
 5623 FOR G=1 TO LEN(LASTNOUN$)
 5624 CHAR = ASC(LASTNOUN$(G,G))
 5625 IF CHAR>95 THEN CHAR=CHAR-32:LASTNOUN$(G,G)=CHR$(CHAR)
